@@ -1,0 +1,152 @@
+/* Keep the first care decisions in view on ordinary laptop screens. */
+main { padding-top: 18px; }
+.intro { margin-bottom: 14px; }
+.toolbar { margin-bottom: 10px; }
+.zones { margin-bottom: 7px; }
+#scene-scroll { max-height: min(640px, calc(100dvh - 230px)); }
+.plant { --tilt: 0deg; }
+.plant-art { z-index: var(--depth, 0); transform: scale(var(--growth-scale, 1)) rotate(var(--tilt)); transition: transform .3s cubic-bezier(.3,1.5,.55,1), filter .2s; }
+/* Twenty plants across three beds: rows are generated from the soil corners in model.mjs (BEDS, slots). */
+/* Sprites share a 340 x 380 frame (tools/normalize_plants.py); widths keep the daisies at their earlier on-screen size. */
+.plant { width: 5.74%; }
+.plant.zone-strong { width: 4.82%; }
+.plant.zone-stranger { width: 5.37%; }
+/* The whole plant is the click target; the name stays hidden until hover, focus or selection. */
+.plant-hit { position: absolute; left: var(--hit-l, 0); bottom: 0; width: var(--hit-w, 100%); height: max(var(--art-top, 60px), 34px); pointer-events: auto; border-radius: 40%; z-index: calc(var(--depth, 0) + 1); }
+.plant-hit:focus-visible { outline-offset: -2px; }
+.plant .dot.base { position: absolute; left: 50%; top: 2px; transform: translateX(-50%); width: 6px; height: 6px; box-shadow: 0 0 0 2px #fffdf1cc; z-index: calc(var(--depth, 0) + 2); pointer-events: none; }
+.plant-name { top: auto; bottom: calc(var(--art-top, 60px) * 1.2 + 6px); transform: translate(-50%, 5px); z-index: var(--label-depth, 1000); min-height: 0; min-width: 0; padding: 5px 9px 5px 8px; font-size: 11px; line-height: 1.2; max-width: 150px; border-radius: 9px; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity .16s, transform .16s, visibility 0s .16s; }
+.plant-name .label { max-width: none; min-width: 0; }
+.plant:hover, .plant:focus-within, .plant.focused { z-index: 3000; }
+.plant:hover .plant-art, .plant:focus-within .plant-art, .plant.focused .plant-art { transform: scale(calc(var(--growth-scale, 1) * 1.2)) rotate(var(--tilt)); }
+.plant:hover .plant-name, .plant:focus-within .plant-name, .plant.focused .plant-name { opacity: 1; visibility: visible; transform: translate(-50%, 0); transition: opacity .18s, transform .24s cubic-bezier(.3,1.5,.55,1); }
+.plant.filtered .plant-hit { pointer-events: none; }
+/* Care rings: a warm glow on the soil under plants that need care. A wilted plant is low and brown on brown soil,
+   so the glow is what makes it easy to find. Wilted breathes slowly; thirsty gets a quieter static ring.
+   The ring scales with the plant and sits just behind its own art. Pause motion and reduced motion stop the breathing. */
+.plant.state-thirsty::before, .plant.state-wilted::before { content: ""; position: absolute; left: 50%; bottom: 0; width: calc(84% * var(--growth-scale, 1)); aspect-ratio: 2.5; transform: translate(-50%, 40%); border-radius: 50%; pointer-events: none; z-index: calc(var(--depth, 0) - 1); }
+.plant.state-thirsty::before { border: 1px solid #f3cd8599; }
+.plant.state-wilted::before { border: 2.5px solid #ff8a5c; background: radial-gradient(closest-side, #ffa274b3, #ff8a5c40 70%, #ff8a5c00); box-shadow: 0 0 16px 6px #ff7a45cc, inset 0 0 6px 1px #ffd9bf99; animation: care-glow 2.6s ease-in-out infinite; }
+@keyframes care-glow { 0%, 100% { opacity: .72; transform: translate(-50%, 40%) scale(.93); } 50% { opacity: 1; transform: translate(-50%, 40%) scale(1.07); } }
+/* Nursery: friends who are not planted right now. */
+.nursery { margin-top: 10px; padding: 14px 16px; background: #f1f3ea; border: 1px solid #dfe5d4; border-radius: 14px; }
+.nursery-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; }
+.nursery-head h3 { margin: 0; font-size: 13px; }
+.nursery-head h3 span { font-size: 11px; color: var(--muted); margin-left: 4px; }
+.nursery-head p { margin: 0; font-size: 11px; color: var(--muted); }
+.nursery-list { display: flex; gap: 8px; flex-wrap: wrap; }
+.nursery-card { display: flex; align-items: center; gap: 7px; min-height: 40px; border: 1px solid #d8dfcf; background: #fffef9; border-radius: 9px; padding: 6px 11px; font-size: 11px; }
+.nursery-card span { color: var(--muted); font-size: 10px; }
+.nursery-card.focused { border-color: #627b49; background: #fffdeb; }
+#nursery-empty { margin: 0; }
+.nursery-head h3 .nursery-due { color: #a0672d; font-weight: 600; margin-left: 2px; }
+.nursery-card.due { border-color: #e3c99a; background: #fffaf0; }
+.swap-offer { margin-top: 10px; padding: 12px; border: 1px solid #e6dcc0; background: #fbf6e6; border-radius: 12px; font-size: 12px; }
+.swap-offer p { margin: 0 0 9px; white-space: normal; max-height: none; }
+.swap-offer .primary { min-height: 40px; padding: 8px 14px; font-size: 12px; }
+.swap-offer small { display: block; margin-top: 8px; font-size: 10px; color: var(--muted); }
+.state-guide { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:20px 0; }
+.state-guide figure { margin:0; text-align:center; background:#f1eee4; border-radius:12px; padding:10px 6px; }
+.state-guide img { width:100%; height:110px; object-fit:contain; }
+.state-guide figcaption { font-size:12px; font-weight:600; }
+.state-guide small { display:block; font-size:10px; font-weight:400; margin-top:6px; }
+/* A restrained clay creature with the same elevated camera and warm light as the ground. */
+#panda { left:52%; top:43%; width:11.5%; }
+#panda::before { content:""; position:absolute; width:68%; height:13%; left:16%; bottom:-1%; background:radial-gradient(ellipse,#6b4c3580 0%,#6b4c3500 75%); filter:blur(4px); z-index:-1; }
+#panda-a { animation:panda-breath 7s ease-in-out infinite; transform-origin:50% 88%; }
+#panda .zzz { right:8%; top:-3%; font-size:16px; }
+@keyframes panda-breath { 0%,100%{transform:scale(1)} 50%{transform:scale(1.012) translateY(-1px)} }
+/* Bed signs: a clay sign sprite (assets/sign-clay-v1.webp) with the bed name set in type on the board.
+   --x/--y is where the stake meets the ground. The board face is centred at 50% / 32% of the sprite and leans about 3.5deg. */
+.bed-sign { position:absolute; left:var(--x); top:var(--y); z-index:var(--depth,1); width:9.6cqw; transform:translate(-50%,-98%); pointer-events:none; }
+.bed-sign img { display:block; width:100%; height:auto; filter:saturate(.86) brightness(.97) drop-shadow(.18cqw .3cqw .3cqw #3f27123d); }
+.bed-sign span { position:absolute; left:50%; top:32%; transform:translate(-50%,-50%) rotate(3.6deg); white-space:nowrap; color:#fff4dd; font:700 1.32cqw/1 ui-rounded,"SF Pro Rounded","Nunito",var(--font); letter-spacing:.03em; text-shadow:0 .09cqw .05cqw #6b3c1bd9, 0 .2cqw .35cqw #4a270f66; }
+.bed-sign i { position:absolute; left:50%; bottom:-.35cqw; width:4.2cqw; height:1.1cqw; transform:translateX(-38%); background:radial-gradient(ellipse at center,#3f271266 0%,#3f271200 70%); }
+/* Three image-based butterflies bring motion without blocking plants or labels. */
+#butterflies { position:absolute; inset:0; pointer-events:none; z-index:9; overflow:hidden; }
+.butterfly { position:absolute; width:3.8%; height:auto; filter:saturate(.72) brightness(.97) drop-shadow(0 4px 4px #3c3c3640); transform-origin:50% 55%; will-change:transform; }
+.butterfly-one { left:9%; top:34%; animation:butterfly-one 13s ease-in-out infinite; }
+.butterfly-two { left:54%; top:25%; width:3.2%; animation:butterfly-two 17s ease-in-out -5s infinite; }
+.butterfly-three { left:73%; top:32%; width:3.4%; animation:butterfly-three 15s ease-in-out -8s infinite; }
+@keyframes butterfly-one { 0%,100%{transform:translate(0,0) rotate(-12deg) scaleX(.88)} 24%{transform:translate(3.5cqw,-1.5cqw) rotate(8deg) scaleX(.57)} 51%{transform:translate(7cqw,.9cqw) rotate(-7deg) scaleX(.94)} 78%{transform:translate(3.6cqw,-1.1cqw) rotate(5deg) scaleX(.6)} }
+@keyframes butterfly-two { 0%,100%{transform:translate(0,0) rotate(11deg) scaleX(.62)} 30%{transform:translate(-3cqw,1cqw) rotate(-10deg) scaleX(.95)} 63%{transform:translate(-6cqw,-.7cqw) rotate(8deg) scaleX(.58)} }
+@keyframes butterfly-three { 0%,100%{transform:translate(0,0) rotate(-3deg) scaleX(.96)} 33%{transform:translate(3.2cqw,-1.1cqw) rotate(10deg) scaleX(.6)} 67%{transform:translate(5cqw,.8cqw) rotate(-9deg) scaleX(.9)} }
+.care-queue { display:flex; align-items:center; gap:8px; padding:10px 12px; background:#eef1e8; border:1px solid #dce3d2; border-radius:12px; margin:0 0 10px; flex-wrap:wrap; }
+.care-queue .eyebrow { margin:0 12px 0 0; }
+.care-queue-item { display:flex; align-items:center; gap:7px; min-height:36px; border:1px solid #d8dfcf; background:#fffef9; border-radius:8px; padding:6px 10px; font-size:11px; }
+.care-queue-item span { color:var(--muted); font-size:10px; }
+.care-empty { margin:0; font-size:11px; color:var(--muted); }
+#space-action, #garden-toggle { display:block; text-align:left; }
+.person-links { display:flex; gap:14px; flex-wrap:wrap; }
+/* List view: the garden as a spreadsheet. Scrolls sideways inside its own frame on narrow screens. */
+.table-wrap { overflow-x:auto; border:1px solid #dce1d2; border-radius:14px; background:#fffef9; }
+.friend-table { width:100%; min-width:980px; border-collapse:collapse; font-size:12px; font-variant-numeric:tabular-nums; }
+.friend-table th { position:sticky; top:0; background:#eef1e7; color:var(--muted); text-align:left; font-size:10px; font-weight:650; letter-spacing:1px; text-transform:uppercase; padding:10px 12px; border-bottom:1px solid #dce1d2; white-space:nowrap; }
+.friend-table td { padding:10px 12px; border-bottom:1px solid #eceee6; vertical-align:top; }
+.friend-table tbody tr { cursor:pointer; transition:background .25s; }
+.friend-table tbody tr:nth-child(even) { background:#fafaf4; }
+.friend-table tbody tr:hover { background:#f2f5ea; }
+.friend-table tr.due td.status { color:#9a4f34; font-weight:600; }
+.friend-table tr.fresh { background:#e6f0d9 !important; }
+.friend-table tr.fresh td:first-child { box-shadow:inset 3px 0 0 #6f8f50; }
+.friend-table .who { min-width:190px; }
+.friend-table .row-name { display:block; padding:0; font-weight:650; font-size:13px; text-align:left; color:var(--ink); }
+.friend-table .row-title { display:block; color:var(--muted); font-size:11px; margin-top:2px; }
+.friend-table .status { white-space:nowrap; }
+.friend-table .status .dot { margin-right:6px; }
+.friend-table .num { white-space:nowrap; }
+.friend-table .step { color:#55604f; max-width:280px; }
+.demo-badge { margin-right:auto; font-size:11px; font-weight:600; letter-spacing:.3px; color:#7a5a2c; background:#f6ead2; border:1px solid #e8d4ad; border-radius:20px; padding:4px 10px; white-space:nowrap; }
+.remove-friend { display:block; margin:14px auto 0; color:#a74833; }
+.remove-confirm { margin-top:12px; padding:12px; border:1px solid #e8c9bd; background:#fbf1ec; border-radius:10px; font-size:12px; }
+.remove-confirm p { margin:0 0 10px; }
+.remove-confirm div { display:flex; gap:8px; justify-content:flex-end; }
+.remove-confirm .danger { background:#a74833; color:#fff; border-radius:8px; padding:8px 14px; min-height:40px; font-weight:600; }
+/* Water bar: pinned to the bottom of the friend drawer. The negative offsets cancel the drawer's own padding. */
+.water-bar { position:sticky; bottom:-22px; z-index:2; margin:18px -22px -22px; padding:12px 22px calc(14px + env(safe-area-inset-bottom, 0px)); background:var(--paper); border-top:1px solid var(--line); box-shadow:0 -8px 18px #2833200d; }
+.water-bar .submit { width:100%; margin:0; min-height:46px; font-size:14px; }
+@media (max-width: 700px) { .water-bar { bottom:-18px; margin:16px -20px -18px; padding:12px 20px calc(12px + env(safe-area-inset-bottom, 0px)); } }
+/* Clear the phone's home indicator when the page runs inside the Claude app. */
+.toast { bottom: calc(20px + env(safe-area-inset-bottom, 0px)); }
+@media (max-width: 700px) {
+  main { padding-top: 16px; }
+  .intro { margin-bottom: 14px; }
+  .toolbar { margin-bottom: 10px; }
+  .zones { margin-bottom: 7px; }
+  #scene-scroll { max-height: 510px; }
+  .care-queue .eyebrow { width:100%; }
+}
+/* Whole garden on one screen: app.js sets --fit-h (room below the frame's top edge), the frame takes the width that
+   height allows at 3:2 and centres. Below 700px the swipeable panorama stays as it was. */
+@media (min-width: 701px) {
+  #scene-scroll { max-height: none; max-width: calc(var(--fit-h, 640px) * 1.5 + 2px); margin-inline: auto; overflow: hidden; }
+  #scene { min-width: 0; }
+  .garden-footer, #plant-guide { max-width: calc(var(--fit-h, 640px) * 1.5 + 2px); margin-inline: auto; }
+  #plant-guide { display: block; }
+}
+.list-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
+.list-head .primary { flex-shrink: 0; }
+.page-footer .shortcuts { color: #a0a796; }
+@media (max-width: 700px) { .page-footer .shortcuts { display: none; } .list-head { flex-wrap: wrap; } }
+/* Garden-area filters share the toolbar row, and the header and intro are tighter, so the garden gets the height. */
+.toolbar .zones { margin: 0; }
+@media (min-width: 701px) {
+  .header { padding-top: 12px; padding-bottom: 12px; }
+  main { padding-top: 14px; }
+  .intro { margin-bottom: 10px; }
+  .intro .eyebrow { margin-bottom: 4px; }
+  .intro h1 { font-size: clamp(24px, 2.4vw, 30px); margin-bottom: 4px; }
+}
+@media (max-width: 1100px) { .toolbar { flex-wrap: wrap; } }
+@media (max-width: 700px) { .toolbar .zones { order: 5; width: 100%; } }
+/* Value exchange: what each side can offer, in the list and in the friend's drawer. */
+.friend-table { min-width: 1180px; }
+.friend-table td.offer { min-width: 150px; max-width: 220px; color: #4d5b46; }
+.friend-table td.step { max-width: 220px; }
+.value-swap { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; margin-top: 14px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 12px; background: #fffef9; }
+.value-swap p { margin: 2px 0 0; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.value-swap .eyebrow { margin: 0; }
+.value-swap small { grid-column: 1 / -1; font-size: 10px; color: var(--muted); }
+.value-swap small:empty { display: none; }
+.friend-table td.status { min-width: 140px; }
+.friend-table td.step { min-width: 200px; }
