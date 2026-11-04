@@ -8,8 +8,8 @@ Most of us only reach out to our network when we need something. Network Garden 
 
 ## Try it
 
-- **Demo with fictional friends:** open `docs/index.html`, or the live demo on GitHub Pages.
-- **Start your own garden:** open `docs/garden.html`. It starts empty and saves to your own browser.
+- **Demo with fictional friends:** https://austinzhang12345.github.io/network-garden/
+- **Start your own garden:** https://austinzhang12345.github.io/network-garden/garden.html. It starts empty and saves to your own browser.
 
 Both are single HTML files. No account, no server, no install.
 
